@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	HRESULT hr = S_OK;
 
 	hr = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void **)pFactory.GetAddressOf());
-	for (int gpuIndex = 0; gpuIndex < 1; gpuIndex++)
+	for (int gpuIndex = 0; gpuIndex <= 1; gpuIndex++)
 	{
 		hr = pFactory->EnumAdapters(gpuIndex, pAdapter.GetAddressOf());
 		if (FAILED(hr))
