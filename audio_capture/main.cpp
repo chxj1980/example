@@ -10,6 +10,8 @@ int main(int argc, char **argv)
 	opus::OpusConfig config;
 	config.samplerate = 48000;
 	config.channels = 2;
+	config.bitrate = 32000;
+	config.variable_duration = OPUS_FRAMESIZE_20_MS;
 
 	opus::OpusEncoder opusEncoder;
 	opusEncoder.init(config);
@@ -29,7 +31,7 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	int frameSize = config.samplerate / 50;
+	int frameSize = config.samplerate / 50; /* 20 ms*/
 	int16_t data[10000] = { 0 };
 	uint8_t encBuf[10000] = { 0 };
 	int16_t decBuf[10000] = { 0 };
