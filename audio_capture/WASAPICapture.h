@@ -14,7 +14,7 @@
 class WASAPICapture
 {
 public:
-	typedef std::function<void(WAVEFORMATEX *m_mixFormat, BYTE *data, uint32_t samples)> PacketCallback;
+	typedef std::function<void(WAVEFORMATEX *m_mixFormat, uint8_t *data, uint32_t samples)> PacketCallback;
 
 	WASAPICapture();
 	~WASAPICapture();
@@ -28,6 +28,7 @@ public:
 	void setCallback(PacketCallback callback);
 
 private:
+	int adjustFormatTo16Bits(WAVEFORMATEX *pwfx);
 	int capture();
 
 	const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
@@ -45,6 +46,8 @@ private:
 	REFERENCE_TIME m_hnsActualDuration;
 	uint32_t m_bufferFrameCount;
 	PacketCallback m_callback;
+	std::shared_ptr<uint8_t> m_pcmBuf;
+	uint32_t m_pcmBufSize;
 	Microsoft::WRL::ComPtr<IMMDeviceEnumerator> m_enumerator;
 	Microsoft::WRL::ComPtr<IMMDevice> m_device;
 	Microsoft::WRL::ComPtr<IAudioClient> m_audioClient;

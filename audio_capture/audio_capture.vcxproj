@@ -154,10 +154,12 @@
     <ClCompile Include="OpusCodec.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="WASAPICapture.cpp" />
+    <ClCompile Include="WASAPIPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpusCodec.h" />
     <ClInclude Include="WASAPICapture.h" />
+    <ClInclude Include="WASAPIPlayer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
