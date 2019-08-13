@@ -141,8 +141,6 @@ int WASAPICapture::start()
 	
 	m_isEnabeld = true;
 	m_threadPtr.reset(new std::thread([this] {
-
-
 		while (this->m_isEnabeld)
 		{			
 			if (this->capture() < 0)
@@ -182,8 +180,6 @@ void WASAPICapture::setCallback(PacketCallback callback)
 
 int WASAPICapture::capture()
 {
-	std::this_thread::sleep_for(std::chrono::milliseconds(5));
-
 	HRESULT hr = S_OK;
 	uint32_t packetLength = 0;
 	uint32_t numFramesAvailable = 0;
@@ -197,6 +193,12 @@ int WASAPICapture::capture()
 		return -1;
 	}
 
+	if (packetLength == 0)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		return 0;
+	}
+
 	while (packetLength != 0) 
 	{
 		hr = m_audioCaptureClient->GetBuffer(&pData, &numFramesAvailable, &flags, NULL, NULL);
@@ -206,17 +208,18 @@ int WASAPICapture::capture()
 			return -1;
 		}
 
+		if (m_pcmBufSize < numFramesAvailable * m_mixFormat->nBlockAlign)
+		{
+			m_pcmBufSize = numFramesAvailable * m_mixFormat->nBlockAlign;
+			m_pcmBuf.reset(new uint8_t[m_pcmBufSize]);
+		}
+
 		if (flags & AUDCLNT_BUFFERFLAGS_SILENT)
 		{
 			memset(m_pcmBuf.get(), 0, m_pcmBufSize);
 		}
 		else
 		{
-			if (m_pcmBufSize < numFramesAvailable * m_mixFormat->nBlockAlign)
-			{
-				printf("[WASAPICapture] Buffer not large enough for samples.\n");
-				return -1;
-			}
 			memcpy(m_pcmBuf.get(), pData, numFramesAvailable * m_mixFormat->nBlockAlign);
 		}
 

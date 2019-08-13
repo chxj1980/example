@@ -8,13 +8,15 @@
 #include <wrl.h>
 #include <cstdio>
 #include <cstdint>
+#include <functional>
 #include <mutex>
+#include <memory>
 #include <thread>
 
 class WASAPICapture
 {
 public:
-	typedef std::function<void(WAVEFORMATEX *m_mixFormat, uint8_t *data, uint32_t samples)> PacketCallback;
+	typedef std::function<void(const WAVEFORMATEX *mixFormat, uint8_t *data, uint32_t samples)> PacketCallback;
 
 	WASAPICapture();
 	~WASAPICapture();
