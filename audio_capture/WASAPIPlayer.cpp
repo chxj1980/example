@@ -73,7 +73,7 @@ int WASAPIPlayer::init()
 	}
 
 	// Calculate the actual duration of the allocated buffer.
-	m_hnsActualDuration = (double)REFTIMES_PER_SEC * m_bufferFrameCount / m_mixFormat->nSamplesPerSec;
+	m_hnsActualDuration = REFTIMES_PER_SEC * m_bufferFrameCount / m_mixFormat->nSamplesPerSec;
 
 	m_initialized = true;
 	return 0;

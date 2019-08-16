@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 
 namespace opus
 {
@@ -60,7 +61,13 @@ private:
 	bool m_initialized = false;
 	OpusConfig m_config;
 
+	std::shared_ptr<uint8_t> m_prevBuffer;
+	int m_prevBufferSize = 0;
+	bool m_preLost = false;
+	int m_count = 0;
 	::OpusDecoder *m_decoder = NULL;
+
+	const int kMaxPacketSize = 5760;
 };
 
 }

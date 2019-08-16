@@ -122,16 +122,62 @@ int OpusDecoder::decode(uint8_t *data, int dataSize, int16_t *outBuf, int maxOut
 		return -1;
 	}
 
-	int maxFrameSize = 48000 * 2 * 2;
-	if (maxFrameSize > maxOutBufSize)
+	bool curlost = false;
+	int outputSamples = 0;
+	int maxFrameSize = kMaxPacketSize;
+
+	if (data == NULL || dataSize == 0)
 	{
-		maxFrameSize = maxOutBufSize;
+		curlost = true;
 	}
 
-	int outputSamples = opus_decode(m_decoder, data, dataSize, outBuf, maxFrameSize, 0);
-	//printf("outputSamples: %d\n", outputSamples);
+	if (m_preLost && m_config.use_inbandfec)
+	{
+		opus_decoder_ctl(m_decoder, OPUS_GET_LAST_PACKET_DURATION(&maxFrameSize));
+	}
+
+	int curFrameSize = maxOutBufSize / m_config.channels / 2;
+	if (maxFrameSize > curFrameSize)
+	{
+		maxFrameSize = curFrameSize;
+	}
+
+	if (m_count >= m_config.use_inbandfec) 
+	{
+		if (m_config.use_inbandfec)
+		{
+			if (m_preLost)
+			{
+				outputSamples = opus_decode(m_decoder, curlost ? NULL : data, dataSize, outBuf, maxFrameSize, 1);
+			}
+			else
+			{
+				if (m_prevBuffer != nullptr && m_prevBufferSize > 0)
+				{
+					outputSamples = opus_decode(m_decoder, m_prevBuffer.get(), m_prevBufferSize, outBuf, maxFrameSize, 0);
+					m_prevBuffer = nullptr;
+					maxFrameSize = 0;
+				}
+			}
+		}
+		else
+		{
+			outputSamples = opus_decode(m_decoder, curlost ? NULL : data, dataSize, outBuf, maxFrameSize, 0);
+		}
+	}
+
+	if (m_config.use_inbandfec)
+	{
+		m_preLost = curlost;
+		if (!m_preLost && dataSize > 0)
+		{
+			m_count++;
+			m_prevBuffer.reset(new uint8_t[dataSize]);
+			memcpy(m_prevBuffer.get(), data, dataSize);
+			m_prevBufferSize = dataSize;
+		}
+	}
 
 	return outputSamples;
 }
-
 }
