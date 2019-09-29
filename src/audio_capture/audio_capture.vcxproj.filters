@@ -24,10 +24,10 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="test.cpp">
+    <ClCompile Include="WASAPIPlayer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="WASAPIPlayer.cpp">
+    <ClCompile Include="test_opus.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

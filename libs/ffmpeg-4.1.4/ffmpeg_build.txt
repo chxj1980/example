@@ -1,0 +1,27 @@
+1. MSYS2 安装 https://www.msys2.org/
+2. 打开msys2_shell.cmd
+   pacman -Syu
+   pacman -S make pkgconf diffutils
+   pacman -S make pkg-config diffutils yasm
+   
+   # 安装mingw64
+   pacman -S mingw-w64-x86_64-nasm mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2
+   
+   # 安装mingw32
+   pacman -S mingw-w64-i686-nasm mingw-w64-i686-gcc mingw-w64-i686-SDL2
+
+3. C:\msys2\usr\bin\link.exe改一下名，因为会和vc的link.exe重名
+
+4. 创建 msys_vs2017_x86.bat, 内容如下:
+
+set MSYS2_PATH_TYPE=inherit
+call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
+msys2_shell.cmd -mingw32
+
+5. x86 配置选项
+./configure --prefix=./vs2017_build_x86 --enable-gpl --enable-shared --disable-static --toolchain=msvc --pkg-config=pkg-config --arch=x86 --enable-version3 --disable-bzlib --disable-iconv --disable-zlib --disable-lzma --disable-debug --disable-avdevice --disable-doc --disable-ffplay --disable-ffprobe --disable-encoders --disable-protocols --disable-decoders --enable-decoder=h264  --enable-decoder=hevc --enable-decoder=opus --enable-encoder=opus --enable-libopus --enable-protocol=file --enable-opengl --enable-hwaccel=h264_dxva2 --enable-hwaccel=hevc_dxva2 --enable-avformat --enable-avresample --enable-swscale --enable-parser=h264 --disable-openssl --enable-parser=hevc --enable-muxer=h264 --enable-demuxer=h264 --enable-muxer=hevc --enable-demuxer=hevc
+
+./configure --prefix=./vs2017_build_x86 --enable-gpl --enable-shared --disable-static --toolchain=msvc --pkg-config=pkg-config --arch=x86 --enable-version3 --disable-bzlib --disable-iconv --disable-zlib --disable-lzma --disable-debug --disable-doc --disable-ffplay --disable-ffprobe --disable-openssl
+
+6. x64 配置选项
+./configure --prefix=./vs2017_build_x64 --enable-gpl --enable-shared --disable-static --toolchain=msvc --pkg-config=pkg-config --arch=x86_64 --enable-version3 --disable-bzlib --disable-iconv --disable-zlib --disable-lzma --disable-debug --disable-avdevice --disable-doc --disable-ffplay --disable-ffprobe --disable-encoders --disable-protocols --disable-decoders --enable-decoder=h264  --enable-decoder=hevc --enable-decoder=opus --enable-encoder=opus --enable-libopus --enable-protocol=file --enable-opengl --enable-hwaccel=h264_dxva2 --enable-hwaccel=hevc_dxva2 --enable-avformat --enable-avresample --enable-swscale --enable-parser=h264 --disable-openssl --enable-parser=hevc --enable-muxer=h264 --enable-demuxer=h264 --enable-muxer=hevc --enable-demuxer=hevc 
