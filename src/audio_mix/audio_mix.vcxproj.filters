@@ -18,5 +18,13 @@
     <ClCompile Include="main.cpp">
       <Filter>资源文件</Filter>
     </ClCompile>
+    <ClCompile Include="AudioMixer.cpp">
+      <Filter>资源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AudioMixer.h">
+      <Filter>资源文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
