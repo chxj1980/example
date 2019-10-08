@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 		{
 			if (len1 > 0)
 			{
-				//amix.addFrame(0, buf1, len1);
+				amix.addFrame(0, buf1, len1);
 			}
 			
 			if (len2 > 0)
