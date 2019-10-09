@@ -19,6 +19,10 @@ int main(int argc, char **argv)
 		std::cout << hex3 << std::endl;
 	}
 	
+	std::cout << "test generate nonce: " << md5::generate_nonce() << std::endl;
+	std::cout << "test generate nonce: " << md5::generate_nonce() << std::endl;
+	std::cout << "test generate nonce: " << md5::generate_nonce() << std::endl;
+
 	getchar();
 	return 0;
 }
