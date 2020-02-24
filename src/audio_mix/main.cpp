@@ -13,13 +13,10 @@
 
 int main(int argc, char **argv)
 {
-
 	AudioMixer amix;
-	amix.addAudioInput(0, 48000, 2, 16);
-	//amix.addAudioInput(0, 44100, 2, 32);
-	amix.addAudioInput(1, 48000, 2, 16);
-	//amix.addAudioInput(2, 48000, 2, 32);
-	amix.addAudioOutput(44100, 2, 32);
+	amix.addAudioInput(0, 48000, 2, 16, AV_SAMPLE_FMT_S16);
+	amix.addAudioInput(1, 48000, 2, 16, AV_SAMPLE_FMT_S16);
+	amix.addAudioOutput(44100, 2, 32, AV_SAMPLE_FMT_FLT);
 
 	if (amix.init() < 0)
 	{

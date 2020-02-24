@@ -18,7 +18,7 @@ AudioMixer::~AudioMixer()
 
 }
 
-int AudioMixer::addAudioInput(uint32_t index, uint32_t samplerate, uint32_t channels, uint32_t bitsPerSample)
+int AudioMixer::addAudioInput(uint32_t index, uint32_t samplerate, uint32_t channels, uint32_t bitsPerSample, AVSampleFormat format)
 {
 	std::lock_guard<std::mutex> locker(m_mutex);
 
@@ -36,11 +36,12 @@ int AudioMixer::addAudioInput(uint32_t index, uint32_t samplerate, uint32_t chan
 	filterInfo.samplerate = samplerate;
 	filterInfo.channels = channels;
 	filterInfo.bitsPerSample = bitsPerSample;
+	filterInfo.format = format;
 	filterInfo.name = std::string("input") + std::to_string(index);
 	return 0;
 }
 
-int AudioMixer::addAudioOutput(uint32_t samplerate, uint32_t channels, uint32_t bitsPerSample)
+int AudioMixer::addAudioOutput(uint32_t samplerate, uint32_t channels, uint32_t bitsPerSample, AVSampleFormat format)
 {
 	std::lock_guard<std::mutex> locker(m_mutex);
 
@@ -53,8 +54,8 @@ int AudioMixer::addAudioOutput(uint32_t samplerate, uint32_t channels, uint32_t 
 	m_audioOutputInfo->samplerate = samplerate;
 	m_audioOutputInfo->channels = channels;
 	m_audioOutputInfo->bitsPerSample = bitsPerSample;
-	m_audioOutputInfo->name = "output";
-
+	m_audioOutputInfo->format = format;
+	m_audioOutputInfo->name = "output";	
 	return 0;
 }
 
@@ -103,7 +104,7 @@ int AudioMixer::init()
 		snprintf(args, sizeof(args),
 				"sample_rate=%d:sample_fmt=%s:channel_layout=0x%" PRIx64,
 				iter.second.samplerate, 
-				getSampleFmtName(iter.second.bitsPerSample).c_str(),
+				av_get_sample_fmt_name(iter.second.format),
 				av_get_default_channel_layout(iter.second.channels));
 		printf("[AudioMixer] input(%d) args: %s\n", iter.first, args);
 
@@ -127,7 +128,7 @@ int AudioMixer::init()
 		const AVFilter *aformat = avfilter_get_by_name("aformat");
 		snprintf(args, sizeof(args),
 				"sample_fmts=%s:sample_rates=%d:channel_layouts=0x%" PRIx64,
-				getSampleFmtName(m_audioOutputInfo->bitsPerSample).c_str(),
+				av_get_sample_fmt_name(m_audioOutputInfo->format),
 				m_audioOutputInfo->samplerate,
 				av_get_default_channel_layout(m_audioOutputInfo->channels));
 		m_audioOutputInfo->filterCtx = avfilter_graph_alloc_filter(m_filterGraph, aformat, "aformat");
@@ -221,7 +222,7 @@ int AudioMixer::addFrame(uint32_t index, uint8_t *inBuf, uint32_t size)
 	std::shared_ptr<AVFrame> avFrame(av_frame_alloc(), [](AVFrame *ptr) { av_frame_free(&ptr); });
 
 	avFrame->sample_rate = iter->second.samplerate;
-	avFrame->format = getSampleFmt(iter->second.bitsPerSample);
+	avFrame->format = iter->second.format;
 	avFrame->channel_layout = av_get_default_channel_layout(iter->second.channels);
 	avFrame->nb_samples = size * 8 / iter->second.bitsPerSample / iter->second.channels;
 
@@ -262,45 +263,4 @@ int AudioMixer::getFrame(uint8_t *outBuf, uint32_t maxOutBufSize)
 
 	memcpy(outBuf, avFrame->extended_data[0], size);
 	return size;
-}
-
-std::string AudioMixer::getSampleFmtName(uint32_t bitsPerSample)
-{
-	std::string name;
-	switch(bitsPerSample)
-	{
-		case 8:
-			name = av_get_sample_fmt_name(AV_SAMPLE_FMT_U8);
-			break;
-		case 16:
-			name = av_get_sample_fmt_name(AV_SAMPLE_FMT_S16);
-			break;
-		case 32:
-			name = av_get_sample_fmt_name(AV_SAMPLE_FMT_S32);
-			break;
-		default:
-			break;
-	}
-
-	return name;
-}
-
-AVSampleFormat AudioMixer::getSampleFmt(uint32_t bitsPerSample)
-{
-	switch (bitsPerSample)
-	{
-	case 8:
-		return AV_SAMPLE_FMT_U8;
-		break;
-	case 16:
-		return AV_SAMPLE_FMT_S16;
-		break;
-	case 32:
-		return AV_SAMPLE_FMT_S32;
-		break;
-	default:
-		break;
-	}
-
-	return AV_SAMPLE_FMT_NONE;
 }

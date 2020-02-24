@@ -25,8 +25,8 @@ public:
 	AudioMixer();
 	virtual ~AudioMixer();
 
-	int addAudioInput(uint32_t index, uint32_t samplerate, uint32_t channels, uint32_t bitsPerSample);
-	int addAudioOutput(uint32_t samplerate, uint32_t channels, uint32_t bitsPerSample);
+	int addAudioInput(uint32_t index, uint32_t samplerate, uint32_t channels, uint32_t bitsPerSample, AVSampleFormat format);
+	int addAudioOutput(uint32_t samplerate, uint32_t channels, uint32_t bitsPerSample, AVSampleFormat format);
 
 	int init();
 	int exit();
@@ -35,9 +35,6 @@ public:
 	int getFrame(uint8_t *outBuf, uint32_t maxOutBufSize);
 
 private:
-
-	std::string getSampleFmtName(uint32_t bitsPerSample);
-	AVSampleFormat getSampleFmt(uint32_t bitsPerSample);
 
 	struct AudioInfo
 	{
@@ -49,6 +46,7 @@ private:
 		uint32_t samplerate;
 		uint32_t channels;
 		uint32_t bitsPerSample;
+		AVSampleFormat format;
 		std::string name;
 
 		AVFilterContext *filterCtx;
