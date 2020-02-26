@@ -22,8 +22,8 @@ struct OpusConfig
 	int complexity = 10;
 	int use_inbandfec = 0;
 	int forcechannels = OPUS_AUTO;
-	int use_dtx = 0;
-	int packet_loss_perc = 0;
+	int use_dtx = 1;
+	int packet_loss_perc = 5;
 	int skip = 0;
 	int variable_duration = OPUS_FRAMESIZE_20_MS;
 };

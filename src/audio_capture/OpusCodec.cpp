@@ -40,6 +40,7 @@ int OpusEncoder::init(OpusConfig config)
 	opus_encoder_ctl(m_encoder, OPUS_GET_LOOKAHEAD(&config.skip));
 	opus_encoder_ctl(m_encoder, OPUS_SET_LSB_DEPTH(16));
 	opus_encoder_ctl(m_encoder, OPUS_SET_EXPERT_FRAME_DURATION(config.variable_duration));
+	//opus_encoder_ctl(m_encoder, OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
 
 	memcpy(&m_config, &config, sizeof(m_config));
 	m_initialized = true;
